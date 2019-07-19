@@ -5,7 +5,7 @@
 -
     name: coronal fricatives
     def: "[-son +cor +cont +strid -delrel]"
-    label: S
+    label: Z
 -
     name: velar/postvelar obstruents
     def: "[-son -ant -cor +back]"
