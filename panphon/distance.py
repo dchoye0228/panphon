@@ -58,6 +58,7 @@ class Distance(object):
         self.fm = fm[feature_model](feature_set=feature_set)
         self.xs = xsampa.XSampa()
         self.dogol_prime = self._dogolpolsky_prime()
+        self.dolgo_prime = self._dolgopolsky_prime()
 
     def _dogolpolsky_prime(self, filename=os.path.join('data', 'dogolpolsky_prime.yml')):
         """Reads Dogolpolsky classes and constructs function cascade
@@ -75,6 +76,22 @@ class Distance(object):
                 rules.append((ftstr2dict(rule['def']), rule['label']))
         return rules
 
+     def _dolgopolsky_prime(self, filename=os.path.join('data', 'dolgopolsky_prime.yml')):
+        """Reads Dolgopolsky classes and constructs function cascade
+
+        Args:
+            filename (str): path to YAML file (from panphon root) containing
+                            Dolgopolsky classes
+        """
+        filename = pkg_resources.resource_filename(
+            __name__, filename)
+        with open(filename, 'r') as f:
+            rules = []
+            dolgo_prime = yaml.load(f.read())
+            for rule in dolgo_prime:
+                rules.append((ftstr2dict(rule['def']), rule['label']))
+        return rules
+
     def map_to_dogol_prime(self, s):
         """Map a string to Dogolpolsky' classes
 
@@ -88,6 +105,24 @@ class Distance(object):
         for seg in self.fm.seg_regex.finditer(s):
             fts = self.fm.fts(seg.group(0))
             for mask, label in self.dogol_prime:
+                if fts >= mask:
+                    segs.append(label)
+                    break
+        return ''.join(segs)
+
+     def map_to_dolgo_prime(self, s):
+        """Map a string to Dolgopolsky' classes
+
+        Args:
+            s (unicode): IPA word
+
+        Returns:
+            (unicode): word with all segments collapsed to _corrected_ D' classes
+        """
+        segs = []
+        for seg in self.fm.seg_regex.finditer(s):
+            fts = self.fm.fts(seg.group(0))
+            for mask, label in self.dolgo_prime:
                 if fts >= mask:
                     segs.append(label)
                     break
@@ -177,6 +212,12 @@ class Distance(object):
         target = self.map_to_dogol_prime(target)
         return self.fast_levenshtein_distance(source, target)
 
+     def dolgo_prime_distance(self, source, target):
+        """Levenshtein distance using _corrected_ D' phonetic equivalence classes"""
+        source = self.map_to_dolgo_prime(source)
+        target = self.map_to_dolgo_prime(target)
+        return self.fast_levenshtein_distance(source, target)
+
     @zerodiviszero
     @xsampaopt
     def dogol_prime_distance_div_maxlen(self, source, target, xsampa=False):
@@ -198,6 +239,13 @@ class Distance(object):
         """
         source = self.map_to_dogol_prime(source)
         target = self.map_to_dogol_prime(target)
+        maxlen = max(len(source), len(target))
+        return self.fast_levenshtein_distance(source, target) / maxlen
+
+     def dolgo_prime_distance_div_maxlen(self, source, target, xsampa=False):
+        """Levenshtein distance using _corrected_ D' classes, normalized by max length"""
+        source = self.map_to_dolgo_prime(source)
+        target = self.map_to_dolgo_prime(target)
         maxlen = max(len(source), len(target))
         return self.fast_levenshtein_distance(source, target) / maxlen
 
