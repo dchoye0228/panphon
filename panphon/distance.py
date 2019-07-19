@@ -76,7 +76,7 @@ class Distance(object):
                 rules.append((ftstr2dict(rule['def']), rule['label']))
         return rules
 
-     def _dolgopolsky_prime(self, filename=os.path.join('data', 'dolgopolsky_prime.yml')):
+    def _dolgopolsky_prime(self, filename=os.path.join('data', 'dolgopolsky_prime.yml')):
         """Reads Dolgopolsky classes and constructs function cascade
 
         Args:
@@ -110,7 +110,7 @@ class Distance(object):
                     break
         return ''.join(segs)
 
-     def map_to_dolgo_prime(self, s):
+    def map_to_dolgo_prime(self, s):
         """Map a string to Dolgopolsky' classes
 
         Args:
@@ -212,7 +212,7 @@ class Distance(object):
         target = self.map_to_dogol_prime(target)
         return self.fast_levenshtein_distance(source, target)
 
-     def dolgo_prime_distance(self, source, target):
+    def dolgo_prime_distance(self, source, target):
         """Levenshtein distance using _corrected_ D' phonetic equivalence classes"""
         source = self.map_to_dolgo_prime(source)
         target = self.map_to_dolgo_prime(target)
@@ -242,7 +242,7 @@ class Distance(object):
         maxlen = max(len(source), len(target))
         return self.fast_levenshtein_distance(source, target) / maxlen
 
-     def dolgo_prime_distance_div_maxlen(self, source, target, xsampa=False):
+    def dolgo_prime_distance_div_maxlen(self, source, target, xsampa=False):
         """Levenshtein distance using _corrected_ D' classes, normalized by max length"""
         source = self.map_to_dolgo_prime(source)
         target = self.map_to_dolgo_prime(target)
