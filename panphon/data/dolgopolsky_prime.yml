@@ -29,7 +29,7 @@
 -
     name: lateral
     def: "[+lat]"
-    label: L
+    label: R
 -
     name: approximates and trills
     def: "[-syl +son -nas]"
